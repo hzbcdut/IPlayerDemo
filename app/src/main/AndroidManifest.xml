@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cdut.hzb.iplayerdemo">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -19,17 +19,16 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".MediaScannerService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity android:name=".VideoPlayerActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="video/*"></data>
+        </activity>
+        <activity android:name=".SurfaceViewPlayerActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
     </application>
