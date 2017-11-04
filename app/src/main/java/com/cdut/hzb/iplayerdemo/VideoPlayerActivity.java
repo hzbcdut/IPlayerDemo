@@ -40,8 +40,6 @@ public class VideoPlayerActivity extends AppCompatActivity {
         getData();
         mTextureView = (TextureView) findViewById(R.id.texture_view);
         mTextureView.setSurfaceTextureListener(listener);
-
-        mediaPlayer = new MediaPlayer();
     }
 
     private void requestPermission() {
@@ -69,6 +67,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private TextureView.SurfaceTextureListener listener = new TextureView.SurfaceTextureListener() {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            mediaPlayer = new MediaPlayer();
+
             mSurface = new Surface(surface);
             mediaPlayer.setSurface(mSurface);
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
