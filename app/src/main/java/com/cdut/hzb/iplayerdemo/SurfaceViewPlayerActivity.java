@@ -28,6 +28,8 @@ public class SurfaceViewPlayerActivity extends AppCompatActivity {
         mHolder.addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                holder.setSizeFromLayout();
+
                 mMediaPlayer.setDisplay(mHolder);
                 try {
                     mMediaPlayer.setDataSource(videoPath);
