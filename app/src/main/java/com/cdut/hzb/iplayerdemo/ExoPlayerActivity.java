@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -26,9 +29,10 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
-public class ExoPlayerActivity extends AppCompatActivity {
+public class ExoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String videoPath;
+    private ImageView playIv, pauseIv;
 
     private SimpleExoPlayer mExoPlayer;
     private SimpleExoPlayerView mPlayerView;
@@ -42,6 +46,11 @@ public class ExoPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_exo_player);
         requestPermission();
         getData();
+        playIv = (ImageView) findViewById(R.id.exo_play);
+        playIv.setOnClickListener(this);
+        pauseIv = (ImageView) findViewById(R.id.exo_pause);
+        pauseIv.setOnClickListener(this);
+
         mPlayerView = (SimpleExoPlayerView) findViewById(R.id.google_simple_exo_player_view);
         initPlayer();
         bindView();
@@ -81,9 +90,9 @@ public class ExoPlayerActivity extends AppCompatActivity {
 //        // 这个是干什么用的？
         mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);  // 填满宽度, 高度按屏幕宽高比进行缩放
 //        // 隐藏用户控制面板？
-//        mPlayerView.setUseController(false);
-//        mPlayerView.setControllerAutoShow(false);
-//        mPlayerView.hideController();
+        mPlayerView.setUseController(false);
+        mPlayerView.setControllerAutoShow(false);
+        mPlayerView.hideController();
     }
 
     private void preparePlay() {
@@ -100,7 +109,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
         // Prepare the player with the source.
         mExoPlayer.prepare(videoSource);
 
-        mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
+//        mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
         // TODO: 2017/11/6 0006
         // 控制面板中按钮控制播放是调这个方法吗？
     }
@@ -119,4 +128,14 @@ public class ExoPlayerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        // TODO: 2017/11/6 0006  播放按钮点击事件无效？
+        Log.d("debug", " --> onClick v = " + v);
+        if (v == playIv) {
+            mExoPlayer.setPlayWhenReady(true);
+        }else if (v == pauseIv) {
+            mExoPlayer.stop();
+        }
+    }
 }
