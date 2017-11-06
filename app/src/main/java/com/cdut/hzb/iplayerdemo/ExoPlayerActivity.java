@@ -19,6 +19,7 @@ import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
@@ -78,7 +79,7 @@ public class ExoPlayerActivity extends AppCompatActivity {
     private void bindView() {
         mPlayerView.setPlayer(mExoPlayer);
 //        // 这个是干什么用的？
-//        mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+        mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);  // 填满宽度, 高度按屏幕宽高比进行缩放
 //        // 隐藏用户控制面板？
 //        mPlayerView.setUseController(false);
 //        mPlayerView.setControllerAutoShow(false);
