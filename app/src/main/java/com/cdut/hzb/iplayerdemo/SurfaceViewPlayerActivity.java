@@ -25,7 +25,7 @@ public class SurfaceViewPlayerActivity extends AppCompatActivity {
     private boolean isPause;
     private int currentPos;
 
-        private void requestPermission() {
+    private void requestPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
         } else {
