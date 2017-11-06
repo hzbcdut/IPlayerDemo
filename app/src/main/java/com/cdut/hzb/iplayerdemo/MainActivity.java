@@ -3,6 +3,8 @@ package com.cdut.hzb.iplayerdemo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,5 +24,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
 
+        DisplayMetrics displayMetrics = App.getContext().getResources().getDisplayMetrics();
+        int screenWidth =  displayMetrics.widthPixels;
+        Log.d("debug", " -->screenWidth =  " + screenWidth);
     }
 }
