@@ -19,11 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".VideoPlayerActivity"></activity>
-        <activity android:name=".SurfaceViewPlayerActivity">
-
-        </activity>
-        <activity android:name=".ExoPlayerActivity">
+        <activity android:name=".VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -31,6 +28,12 @@
 
                 <data android:mimeType="video/*" />
             </intent-filter>
+        </activity>
+        <activity android:name=".SurfaceViewPlayerActivity">
+
+        </activity>
+        <activity android:name=".ExoPlayerActivity">
+
         </activity>
     </application>
 
