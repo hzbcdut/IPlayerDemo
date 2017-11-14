@@ -46,6 +46,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
     private static final String TAG = "ExoPlayerActivity";
 
     private String videoPath;
+    private String subtitlePath;
     private ImageView playIv, pauseIv;
 
     private SimpleExoPlayer mExoPlayer;
@@ -131,6 +132,13 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
         // This is the MediaSource representing the media to be played.
         MediaSource videoSource = new ExtractorMediaSource(Uri.parse(videoPath),
                 dataSourceFactory, extractorsFactory, null, null);
+//        // 添加字幕文件
+//        if (!TextUtils.isEmpty(subtitlePath)) {
+//            MediaSource subtitleSource = new SingleSampleMediaSource(Uri.parse(subtitlePath), dataSourceFactory, Format.create, null, null);
+//            MergingMediaSource mergedSource =
+//                    new MergingMediaSource(videoSource, subtitleSource);
+//        }
+
         // Prepare the player with the source.
         mExoPlayer.prepare(videoSource);
 
