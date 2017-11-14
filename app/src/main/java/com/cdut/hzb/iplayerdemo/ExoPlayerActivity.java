@@ -1,14 +1,20 @@
 package com.cdut.hzb.iplayerdemo;
 
 import android.Manifest;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -16,8 +22,12 @@ import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.metadata.MetadataRenderer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.text.Cue;
+import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -29,7 +39,11 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.List;
+
 public class ExoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = "ExoPlayerActivity";
 
     private String videoPath;
     private ImageView playIv, pauseIv;
@@ -38,11 +52,17 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
     private SimpleExoPlayerView mPlayerView;
 
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
-
+    private boolean mIsLandscape;
+    private int mScreenWidth, mScreenHeight;
+    private int mVideoWidth, mVideoHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // 默认是unspecified，不设置的话，当手机屏幕旋转开关打开的情况下旋转屏幕，手机不会自动旋转
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
         setContentView(R.layout.activity_exo_player);
         requestPermission();
         getData();
@@ -55,6 +75,11 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
         initPlayer();
         bindView();
         preparePlay();
+        setPlayerListener();
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        mScreenWidth = displayMetrics.widthPixels;
+        mScreenHeight = displayMetrics.heightPixels;
     }
 
     private void requestPermission() {
@@ -90,9 +115,9 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
 //        // 这个是干什么用的？
         mPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH);  // 填满宽度, 高度按屏幕宽高比进行缩放
 //        // 隐藏用户控制面板？
-        mPlayerView.setUseController(false);
-        mPlayerView.setControllerAutoShow(false);
-        mPlayerView.hideController();
+//        mPlayerView.setUseController(false);
+//        mPlayerView.setControllerAutoShow(false);
+//        mPlayerView.hideController();
     }
 
     private void preparePlay() {
@@ -109,9 +134,45 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
         // Prepare the player with the source.
         mExoPlayer.prepare(videoSource);
 
-//        mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
+        mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
         // TODO: 2017/11/6 0006
         // 控制面板中按钮控制播放是调这个方法吗？
+
+    }
+
+    /**
+     * 设置播放器的监听回调
+     */
+    private void setPlayerListener() {
+        // 接收Video事件
+        mExoPlayer.addVideoListener(new SimpleExoPlayer.VideoListener() {
+            @Override
+            public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
+                LogUtil.d(Constant.DEBUG_LOG, TAG + " -->onVideoSizeChanged()  width = " + width + " height = " + height
+                        + "  unappliedRotationDegrees = " + unappliedRotationDegrees + " pixelWidthHeightRatio = " + pixelWidthHeightRatio);
+                mVideoWidth = width;
+                mVideoHeight = height;
+            }
+
+            @Override
+            public void onRenderedFirstFrame() {
+
+            }
+        });
+        // 接收MetaData事件
+        mExoPlayer.addMetadataOutput(new MetadataRenderer.Output() {
+            @Override
+            public void onMetadata(Metadata metadata) {
+                LogUtil.d(Constant.DEBUG_LOG, TAG + " --> metadata = " + metadata);
+            }
+        });
+        // 接收文本事件
+        mExoPlayer.addTextOutput(new TextRenderer.Output() {
+            @Override
+            public void onCues(List<Cue> cues) {
+
+            }
+        });
     }
 
     @Override
@@ -136,6 +197,41 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
             mExoPlayer.setPlayWhenReady(true);
         }else if (v == pauseIv) {
             mExoPlayer.stop();
+        }
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        LogUtil.d(Constant.DEBUG_LOG, TAG + " --> onConfigurationChanged(Configuration newConfig) ");
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) { // 横屏
+            //设置全屏即隐藏状态栏
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            mIsLandscape = true;
+
+            //横屏 视频充满全屏
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mPlayerView.getLayoutParams();
+            // 因为屏幕旋转了， 所以这里的宽是屏幕的高    根据视频比例等比缩放
+//            layoutParams.width = mScreenHeight;
+//            layoutParams.height = mScreenHeight * mVideoHeight/mVideoWidth;
+            // 或者不精确一点可以这么设置
+            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT;
+            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT;
+        }else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){// 竖屏
+            //恢复状态栏
+            WindowManager.LayoutParams attrs = getWindow().getAttributes();
+            attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(attrs);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            mIsLandscape = false;
+
+            //竖屏 视频显示固定大小
+            FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) mPlayerView.getLayoutParams();
+            layoutParams.gravity = Gravity.CENTER;
+            layoutParams.width = mScreenWidth;
+            layoutParams.height = mScreenWidth * mVideoHeight/mVideoWidth;
         }
     }
 }

@@ -17,7 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@mipmap/mis_ic_flow_play"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/exo_pause"
@@ -26,6 +27,7 @@
         android:src="@mipmap/menu_icon_pause"
         android:background="#ff0000"
         android:layout_gravity="bottom|center"
-        android:padding="10dp"/>
+        android:padding="10dp"
+        android:visibility="gone"/>
 
 </FrameLayout>
