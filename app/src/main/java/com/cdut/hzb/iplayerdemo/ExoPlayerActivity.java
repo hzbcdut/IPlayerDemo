@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -17,8 +18,10 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
@@ -26,6 +29,8 @@ import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.MetadataRenderer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MergingMediaSource;
+import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -37,8 +42,10 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 
+import java.io.File;
 import java.util.List;
 
 public class ExoPlayerActivity extends AppCompatActivity implements View.OnClickListener {
@@ -132,16 +139,22 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
         // This is the MediaSource representing the media to be played.
         MediaSource videoSource = new ExtractorMediaSource(Uri.parse(videoPath),
                 dataSourceFactory, extractorsFactory, null, null);
-//        // 添加字幕文件
-//        if (!TextUtils.isEmpty(subtitlePath)) {
-//            MediaSource subtitleSource = new SingleSampleMediaSource(Uri.parse(subtitlePath), dataSourceFactory, Format.create, null, null);
-//            MergingMediaSource mergedSource =
-//                    new MergingMediaSource(videoSource, subtitleSource);
-//        }
 
-        // Prepare the player with the source.
-        mExoPlayer.prepare(videoSource);
+        subtitlePath = "/storage/sdcard1/under_sandet.sub";
+//        subtitlePath = "/storage/sdcard1/Land of Mine_TW.srt"; // 不支持srt字幕格式
 
+        // 添加字幕文件
+        if (!TextUtils.isEmpty(subtitlePath) && new File(subtitlePath).exists()) {
+            Format format = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, "zh");
+            MediaSource subtitleSource = new SingleSampleMediaSource(Uri.parse(subtitlePath), dataSourceFactory, format, C.TIME_UNSET);
+            MergingMediaSource mergedSource =
+                    new MergingMediaSource(videoSource, subtitleSource);
+            mExoPlayer.prepare(mergedSource);
+        }else {
+
+            // Prepare the player with the source.
+            mExoPlayer.prepare(videoSource);
+        }
         mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
         // TODO: 2017/11/6 0006
         // 控制面板中按钮控制播放是调这个方法吗？
