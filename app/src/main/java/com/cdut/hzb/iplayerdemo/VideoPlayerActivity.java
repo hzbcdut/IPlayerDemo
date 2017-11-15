@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -36,6 +37,7 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private int mScreenWidth, mScreenHeight;
     private int mVideoWidth, mVideoHeight;
     private boolean mIsLandscape;
+    private String subtitlePath = "/storage/sdcard1/Land of Mine_TW.srt";
 
     public static void start(Context context, String videoPath) {
         Intent intent = new Intent(context, VideoPlayerActivity.class);
@@ -93,6 +95,15 @@ public class VideoPlayerActivity extends AppCompatActivity {
 
             mSurface = new Surface(surface);
             mediaPlayer.setSurface(mSurface);
+
+            mediaPlayer.setOnTimedTextListener(new MediaPlayer.OnTimedTextListener() {
+                @Override
+                public void onTimedText(MediaPlayer mp, TimedText text) {
+                    if (text != null) {
+                        LogUtil.d(Constant.DEBUG_LOG, TAG + " --> text = " + text.getText());
+                    }
+                }
+            });
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -103,6 +114,23 @@ public class VideoPlayerActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(videoPath)) {
                     mediaPlayer.setDataSource(videoPath);
                     mediaPlayer.prepare();
+                    try {
+                        mediaPlayer.addTimedTextSource(subtitlePath, MediaPlayer.MEDIA_MIMETYPE_TEXT_SUBRIP);
+
+                        MediaPlayer.TrackInfo[]  trackInfos = mediaPlayer.getTrackInfo();
+                        if (trackInfos != null && trackInfos.length > 0) {
+                            for ( int i = 0; i< trackInfos.length; i++) {
+                                MediaPlayer.TrackInfo info = trackInfos[i];
+                                if (info.getTrackType() == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_AUDIO) {
+
+                                }else if (info.getTrackType() == MediaPlayer.TrackInfo.MEDIA_TRACK_TYPE_TIMEDTEXT){
+                                    mediaPlayer.selectTrack(i);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     mVideoWidth = mediaPlayer.getVideoWidth();
                     mVideoHeight = mediaPlayer.getVideoHeight();
