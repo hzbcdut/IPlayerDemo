@@ -13,13 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name=".VideoPlayerActivity"
+        <activity
+            android:name=".VideoPlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -29,13 +26,21 @@
                 <data android:mimeType="video/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".SurfaceViewPlayerActivity">
+        <activity android:name=".SurfaceViewPlayerActivity"></activity>
+        <activity
+            android:name=".ExoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"></activity>
+        <activity android:name=".music.MusicActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".ExoPlayerActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden">
 
-        </activity>
+        <service
+            android:name=".music.MusicService"
+            android:exported="false" />
     </application>
 
 </manifest>
