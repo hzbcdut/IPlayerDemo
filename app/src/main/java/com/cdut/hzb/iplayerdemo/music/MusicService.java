@@ -23,6 +23,12 @@ public class MusicService extends Service {
     private MediaPlayer mediaPlayer;
     private PlayBinder mBinder;
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mediaPlayer = new MediaPlayer();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,7 +50,7 @@ public class MusicService extends Service {
 
 
     public void startPlay() {
-        mediaPlayer = new MediaPlayer();
+
         try {
             AssetManager assetManager = getAssets();
             AssetFileDescriptor adf = assetManager.openFd("Shindig_8bit_423845.mp3");
@@ -53,6 +59,7 @@ public class MusicService extends Service {
 //            LogUtil.d(Constant.DEBUG_LOG, TAG + "-->音乐文件大小 length = " + new File(musicPath).length());
 //            mediaPlayer.setDataSource(musicPath);
 
+            mediaPlayer.reset();
 //            mediaPlayer.setDataSource(adf.getFileDescriptor()); // 这样设置错误, onError中what字段返回1，未知错误
             mediaPlayer.setDataSource(adf.getFileDescriptor(), adf.getStartOffset(), adf.getLength());
             mediaPlayer.prepareAsync();
