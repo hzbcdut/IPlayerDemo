@@ -91,8 +91,6 @@ public class MusicService extends Service {
     public void stopPlay() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
         }
     }
 
