@@ -20,9 +20,13 @@ import android.widget.ImageView;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.metadata.Metadata;
@@ -31,11 +35,13 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextRenderer;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
@@ -101,11 +107,10 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
     private void initPlayer() {
         // 1. Create a default TrackSelector
         TrackSelection.Factory adaptiveTrackSelectionFactory = new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        ;
-        TrackSelector trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
 
-        DefaultRenderersFactory rendersFactory = new DefaultRenderersFactory(this);
-        mExoPlayer = ExoPlayerFactory.newSimpleInstance(rendersFactory, trackSelector);
+        TrackSelector trackSelector = new DefaultTrackSelector(adaptiveTrackSelectionFactory);
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(this, trackSelector);
+
 
         // 这种方式创建ExoPlayer播放器已过期
 //        // 1. Create a default TrackSelector
@@ -137,10 +142,14 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
        // Produces Extractor instances for parsing the media data.
         ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
         // This is the MediaSource representing the media to be played.
+//        videoPath = "http://baobab.kaiyanapp.com/api/v1/playUrl?vid=18376&editionType=high&source=ucloud";
+        videoPath = "http://uc.cdn.kaiyanapp.com/1490499356527_f752d403_1280x720.mp4?t=1540181204&k=a70c364834e4e3bf";
+
+//        videoPath = "https://storage.googleapis.com/exoplayer-test-media-1/mkv/android-screens-lavf-56.36.100-aac-avc-main-1280x720.mkv";
         MediaSource videoSource = new ExtractorMediaSource(Uri.parse(videoPath),
                 dataSourceFactory, extractorsFactory, null, null);
 
-        subtitlePath = "/storage/sdcard1/under_sandet.sub";
+//        subtitlePath = "/storage/sdcard1/under_sandet.sub";
 //        subtitlePath = "/storage/sdcard1/Land of Mine_TW.srt"; // 不支持srt字幕格式
 
         // 添加字幕文件
@@ -158,6 +167,50 @@ public class ExoPlayerActivity extends AppCompatActivity implements View.OnClick
         mExoPlayer.setPlayWhenReady(true); // 资源准备好就播放。
         // TODO: 2017/11/6 0006
         // 控制面板中按钮控制播放是调这个方法吗？
+
+
+        mExoPlayer.addListener(new Player.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+            }
+
+            @Override
+            public void onRepeatModeChanged(int repeatMode) {
+
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+                Log.d("debug", " -> ExoPlaybackException error =   " +  error);
+
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+
+            }
+
+            @Override
+            public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+            }
+        });
 
     }
 

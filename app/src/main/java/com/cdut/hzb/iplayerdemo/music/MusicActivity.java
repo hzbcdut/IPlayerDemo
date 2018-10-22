@@ -6,6 +6,9 @@ import android.view.View;
 
 import com.cdut.hzb.iplayerdemo.R;
 
+/**
+ * MusicPresent启动MusicService服务播放音乐（娃娃机claw音乐）
+ */
 public class MusicActivity extends AppCompatActivity {
 
     private MusicPresent musicPresent;
